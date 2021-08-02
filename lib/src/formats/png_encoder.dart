@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:archive/archive.dart';
@@ -62,12 +63,20 @@ class PngEncoder extends Encoder {
     }
   }
 
+  void addTextualData(String key, String value) {
+    textualData[key] = value;
+  }
+
   List<int>? finish() {
     List<int>? bytes;
 
     if (output == null) {
       return bytes;
     }
+
+    textualData.forEach((key, value) {
+      _writeChunk(output!, 'tEXt', utf8.encode('$key\x00$value'));
+    });
 
     _writeChunk(output!, 'IEND', []);
 
@@ -375,6 +384,7 @@ class PngEncoder extends Encoder {
   int sequenceNumber = 0;
   bool isAnimated = false;
   OutputBuffer? output;
+  Map<String, String> textualData = {};
 
   static const FILTER_NONE = 0;
   static const FILTER_SUB = 1;

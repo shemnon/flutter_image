@@ -206,6 +206,12 @@ class PngDecoder extends Decoder {
           _info!.iCCPData = profile.toUint8List();
           _input.skip(4); // CRC
           break;
+        case 'tEXt':
+          var name = _input.readString();
+          var value = _input.readString(chunkSize - 1 - name.length);
+          _info!.textualData[name] = value;
+          _input.skip(4); // CRC
+          break;
         default:
           _input.skip(chunkSize);
           _input.skip(4); // CRC

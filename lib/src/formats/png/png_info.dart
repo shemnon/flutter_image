@@ -28,6 +28,8 @@ class PngInfo extends DecodeInfo {
 
   final _idat = <int>[];
 
+  Map<String, String> textualData = {};
+
   bool get isAnimated => frames.isNotEmpty;
 }
 

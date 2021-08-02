@@ -77,6 +77,28 @@ void main() {
           equals(image.iccProfile!.data.length));
     });
 
+    test('iTXt', () {
+      final image = Image(64, 64);
+      image.fill(getColor(255, 200, 100));
+
+      // Encode the image to PNG
+      final encoder = PngEncoder();
+      encoder.addFrame(image);
+      encoder.addTextualData('Comment', 'This is a text. This is only a text.');
+      var png = encoder.finish();
+      File('$tmpPath/out/png/tEXt.png')
+        ..createSync(recursive: true)
+        ..writeAsBytesSync(png!);
+
+      var pngDecoder = PngDecoder();
+      final image2 = pngDecoder.decodeImage(png);
+      expect(image2, isNotNull);
+      expect(pngDecoder.info, isNotNull);
+      expect(pngDecoder.info!.textualData.length, equals(1));
+      expect(pngDecoder.info!.textualData,
+          containsPair('Comment', 'This is a text. This is only a text.'));
+    });
+
     final dir = Directory('test/res/png');
     final files = dir.listSync();
 
